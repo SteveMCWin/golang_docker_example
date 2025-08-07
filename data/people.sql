@@ -5,5 +5,5 @@ CREATE TABLE people (
     first_name TEXT,
     last_name TEXT,
     email TEXT,
-    ip_adress TEXT
+    ip_address TEXT
 );

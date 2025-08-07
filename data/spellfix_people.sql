@@ -1,4 +1,4 @@
-.load ./spellfix
+.load ./extensions/spellfix
 
 drop table if exists spellfix_people;
 create virtual table spellfix_people using spellfix1;

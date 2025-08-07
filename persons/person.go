@@ -107,21 +107,32 @@ func (base *Db) GetPersonById(id string) (Person, error) {
 
 func (base *Db) AddPerson(newPerson Person) (bool, error) {
 	tx, err := base.db.Begin()
-
 	if err != nil {
 		return false, err
 	}
 
-	stmt, err := tx.Prepare("insert into people (first_name, last_name, email, ip_address) values (?, ?, ?, ?)")
+	defer tx.Rollback()
 
+	stmt_person, err := tx.Prepare("insert into people (first_name, last_name, email, ip_address) values (?, ?, ?, ?)")
 	if err != nil {
 		return false, err
 	}
 
-	defer stmt.Close()
+	defer stmt_person.Close()
 
-	_, err = stmt.Exec(newPerson.FirstName, newPerson.LastName, newPerson.Email, newPerson.IpAddress)
+	stmt_spellfix, err := tx.Prepare("insert into spellfix_people (word) values (?)")
+	if err != nil {
+		return false, err
+	}
 
+	defer stmt_spellfix.Close()
+
+	_, err = stmt_person.Exec(newPerson.FirstName, newPerson.LastName, newPerson.Email, newPerson.IpAddress)
+	if err != nil {
+		return false, err
+	}
+
+	_, err = stmt_spellfix.Exec(newPerson.FirstName)
 	if err != nil {
 		return false, err
 	}

@@ -1,6 +1,6 @@
 services:
   app:
-    image: myapp_test
+    image: stevemcwin/myapp_test
     hostname: myapp
     volumes:
       - ./data:/app/data
