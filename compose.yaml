@@ -1,0 +1,9 @@
+services:
+  app:
+    image: myapp_test
+    hostname: myapp
+    volumes:
+      - ./data:/app/data
+    ports:
+      - '8080:8080'
+

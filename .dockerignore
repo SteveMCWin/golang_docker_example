@@ -1,4 +1,2 @@
-/persons/*.sql
-/persons/*.db
-/persons/*.so
 /blog_crud
+/extensions/*.so

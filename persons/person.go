@@ -1,10 +1,13 @@
 package persons
 
 import (
-	"os"
 	"database/sql"
-	"github.com/mattn/go-sqlite3"
 	"log"
+	"os"
+	"os/exec"
+	"runtime"
+
+	"github.com/mattn/go-sqlite3"
 )
 
 var person_db_opened = false
@@ -27,21 +30,30 @@ func (base *Db) InitDb() error {
 		return nil
 	}
 
+	// Add this before loading the SQLite extension
+	log.Printf("Container architecture: %s", runtime.GOARCH)
+	log.Printf("Container OS: %s", runtime.GOOS)
+
 	dir, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
-	entries, err := os.ReadDir("./persons/")
-    if err != nil {
-        log.Fatal(err)
-    }
- 
-    for _, e := range entries {
-            log.Println(e.Name())
-    }
+	spellfix_relative_path := "/extensions/spellfix"
 
-	spellfix_relative_path := "/persons/spellfix.so"
+	// Check if file exists and get details
+	if info, err := os.Stat(dir + spellfix_relative_path); err != nil {
+		log.Printf("File stat error: %v", err)
+	} else {
+		log.Printf("File exists, size: %d, mode: %v", info.Size(), info.Mode())
+	}
+
+	// Check file type
+	if output, err := exec.Command("file", dir + spellfix_relative_path).Output(); err != nil {
+		log.Printf("File type check error: %v", err)
+	} else {
+		log.Printf("File type: %s", string(output))
+	}
 
 	log.Println("spellfix full path:", dir+spellfix_relative_path)
 
@@ -53,7 +65,7 @@ func (base *Db) InitDb() error {
 		},
 	)
 
-	db_path := "persons/person.db"
+	db_path := "data/person.db"
 	base.db, err = sql.Open("sqlite3_with_extension", db_path)
 	if err != nil {
 		return err
