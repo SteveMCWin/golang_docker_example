@@ -29,3 +29,6 @@ go.work.sum
 
 blog_crud
 
+data/*.db
+extensions/*.so
+
