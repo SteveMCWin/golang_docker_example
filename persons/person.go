@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"os/exec"
-	"runtime"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -30,32 +28,12 @@ func (base *Db) InitDb() error {
 		return nil
 	}
 
-	// Add this before loading the SQLite extension
-	log.Printf("Container architecture: %s", runtime.GOARCH)
-	log.Printf("Container OS: %s", runtime.GOOS)
-
 	dir, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
 	spellfix_relative_path := "/extensions/spellfix"
-
-	// Check if file exists and get details
-	if info, err := os.Stat(dir + spellfix_relative_path); err != nil {
-		log.Printf("File stat error: %v", err)
-	} else {
-		log.Printf("File exists, size: %d, mode: %v", info.Size(), info.Mode())
-	}
-
-	// Check file type
-	if output, err := exec.Command("file", dir + spellfix_relative_path).Output(); err != nil {
-		log.Printf("File type check error: %v", err)
-	} else {
-		log.Printf("File type: %s", string(output))
-	}
-
-	log.Println("spellfix full path:", dir+spellfix_relative_path)
 
 	sql.Register("sqlite3_with_extension",
 		&sqlite3.SQLiteDriver{
